@@ -9,7 +9,7 @@ export const appwriteConfig = {
   tripCollectionId: import.meta.env.VITE_APPWRITE_TRIPS_COLLECTION_ID,
 };
 
-const client = new Client().setEndpoint(appwriteConfig.endpointURL).setProject(appwriteConfig.projectId);
+const client = new Client().setEndpoint("https://sgp.cloud.appwrite.io/v1").setProject(appwriteConfig.projectId);
 const account = new Account(client);
 const database = new Databases(client);
 const storage = new Storage(client);
