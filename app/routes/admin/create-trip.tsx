@@ -12,6 +12,10 @@ import { useNavigate } from "react-router";
 
 export const loader = async () => {
   const response = await fetch("https://restcountries.com/v3.1/all?fields=name,latlng,flags,cca2,maps");
+  if (!response.ok) {
+    throw new Error("Failed to fetch countries");
+  }
+
   const data = await response.json();
 
   return data.map((country: any) => ({
@@ -44,16 +48,18 @@ const CreateTrip = ({ loaderData }: Route.ComponentProps) => {
     flag: country.flag,
   }));
 
+  const selectedCountry = countries.find((c) => c.name === formData.country);
+
   const mapData = [
     {
       country: formData.country,
       color: "#EA382E",
-      coordinates: countries.find((c: Country) => c.name === formData.country)?.coordinates || [],
+      coordinates: selectedCountry?.coordinates || [],
     },
   ];
 
   const handleChange = (key: keyof TripFormData, value: string | number) => {
-    setFormData({ ...formData, [key]: value });
+    setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSubmit = async (event: React.SubmitEvent<HTMLFormElement>) => {
@@ -87,7 +93,7 @@ const CreateTrip = ({ loaderData }: Route.ComponentProps) => {
           country: formData.country,
           numberOfDays: formData.duration,
           travelStyle: formData.travelStyle,
-          interest: formData.interest,
+          interests: formData.interest,
           budget: formData.budget,
           groupType: formData.groupType,
           userId: user.$id,
@@ -125,7 +131,7 @@ const CreateTrip = ({ loaderData }: Route.ComponentProps) => {
 
       <section className="mt-2.5 wrapper-md">
         <form onSubmit={handleSubmit} className="trip-form">
-          <div className="">
+          <div>
             <label htmlFor="country">Country</label>
             <ComboBoxComponent
               id="country"
@@ -145,7 +151,7 @@ const CreateTrip = ({ loaderData }: Route.ComponentProps) => {
 
                 e.updateData(
                   countries
-                    .filter((country) => country.name.toLocaleLowerCase().includes(query))
+                    .filter((country) => country.name.toLowerCase().includes(query))
                     .map((country) => ({
                       text: country.name,
                       value: country.value,
@@ -165,6 +171,7 @@ const CreateTrip = ({ loaderData }: Route.ComponentProps) => {
               placeholder="Enter a number of days (5, 12 ...)"
               className="form-input placeholder:text-gray-100"
               onChange={(e) => handleChange("duration", Number(e.target.value))}
+              required
             />
           </div>
 

@@ -12,9 +12,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   try {
     const model = genAI.getGenerativeModel({
-      model: "gemini-3.1-flash-lite-preview",
+      model: "gemini-2.5-flash",
       generationConfig: {
         responseMimeType: "application/json",
+        temperature: 0.9,
+        maxOutputTokens: 4096,
       },
     });
 
